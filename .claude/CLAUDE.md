@@ -46,6 +46,7 @@ ETH includes autonomous code review (Phase R). Do NOT invoke `/review` separatel
 | Skill                 | Purpose                                                                   |
 | --------------------- | ------------------------------------------------------------------------- |
 | `/product`            | BDD scenario generation + Definition of Ready                             |
+| `/sprint`             | Sprint planning — organize user stories into prioritized, dependency-aware sprints |
 | `/security-audit`     | OWASP security audit (dynamic auditor team)                               |
 | `/review`             | Standalone code review (external PRs, legacy, CI)                         |
 | `/architecture-audit` | Architecture purity audit (DDD/Hexagonal)                                 |
@@ -124,19 +125,26 @@ Never recommend a technology without checking if a TKB evaluation exists.
 
 Agents are dispatched dynamically based on task characteristics. The orchestrator composes optimal teams — no rigid keyword matching.
 
-| Agent                                               | Model  | Domain                        |
-| --------------------------------------------------- | ------ | ----------------------------- |
-| [System Architect](./agents/system-architect)       | opus   | C4, ADRs, system design       |
-| [Contract Architect](./agents/contract-architect)   | opus   | OpenAPI, REST contracts       |
-| [Security Architect](./agents/security-architect)   | opus   | OWASP, threat modeling        |
-| [Data Architect](./agents/data-architect)           | sonnet | SQL schemas, migrations       |
-| [Design Architect](./agents/design-architect)       | sonnet | Design systems, WCAG 2.1 AA   |
-| [Experience Engineer](./agents/experience-engineer) | sonnet | Frontend architecture, state  |
-| [Platform Engineer](./agents/platform-engineer)     | sonnet | CI/CD, Docker, GitHub Actions |
-| [Interface Artisan](./agents/interface-artisan)     | haiku  | React components, Storybook   |
-| [Quality Engineer](./agents/quality-engineer)       | haiku  | Test suites, coverage, AAA    |
-| [Knowledge Architect](./agents/knowledge-architect) | haiku  | TKB, ADR sync, docs           |
-| [i18n Specialist](./agents/i18n-specialist)         | haiku  | Localization, RTL support     |
+| Agent                                                           | Model  | Domain                           |
+| --------------------------------------------------------------- | ------ | -------------------------------- |
+| [System Architect](./agents/system-architect)                   | opus   | C4, ADRs, system design          |
+| [Contract Architect](./agents/contract-architect)               | opus   | OpenAPI, REST contracts          |
+| [Security Architect](./agents/security-architect)               | opus   | OWASP, threat modeling           |
+| [Incident Commander](./agents/incident-commander)               | opus   | Incident response, post-mortems  |
+| [Data Architect](./agents/data-architect)                       | sonnet | SQL schemas, migrations          |
+| [Design Architect](./agents/design-architect)                   | sonnet | Design systems, WCAG 2.1 AA     |
+| [Experience Engineer](./agents/experience-engineer)             | sonnet | Frontend architecture, state     |
+| [Platform Engineer](./agents/platform-engineer)                 | sonnet | CI/CD, Docker, GitHub Actions    |
+| [Accessibility Auditor](./agents/accessibility-auditor)         | sonnet | WCAG 2.2 AA, screen readers     |
+| [Compliance Auditor](./agents/compliance-auditor)               | sonnet | SOC 2, PCI-DSS, GDPR            |
+| [Data Engineer](./agents/data-engineer)                         | sonnet | Pipelines, ETL, reconciliation   |
+| [Interface Artisan](./agents/interface-artisan)                 | haiku  | React components, Storybook      |
+| [Quality Engineer](./agents/quality-engineer)                   | haiku  | Test suites, coverage, AAA       |
+| [Knowledge Architect](./agents/knowledge-architect)             | haiku  | TKB, ADR sync, docs              |
+| [i18n Specialist](./agents/i18n-specialist)                     | haiku  | Localization, RTL support        |
+| [API Tester](./agents/api-tester)                               | haiku  | Contract testing, endpoint validation |
+| [Technical Writer](./agents/technical-writer)                   | haiku  | API docs, runbooks, guides       |
+| [Performance Benchmarker](./agents/performance-benchmarker)     | haiku  | Load testing, Web Vitals, queries |
 
 **Dynamic composition**: BAP provides ETH Composition Data (task count, tier distribution, fintech flag density, layers touched). ETH composes teams from this data — no preset modes. See [rules/orchestrator.md](./rules/orchestrator.md) for the Pattern Matrix.
 

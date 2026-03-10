@@ -14,7 +14,7 @@ argument-hint: "[feature name or user story]"
 user-invocable: true
 model: opus
 context: fork
-allowed-tools: Read, Grep, Glob, Bash, Agent, Write, WebFetch, WebSearch
+allowed-tools: Read, Grep, Glob, Bash, Agent, Write, WebFetch, WebSearch, AskUserQuestion
 ---
 
 # Workflow: Product (User Story & Definition of Ready)
@@ -792,7 +792,7 @@ After completing this workflow, execute [Quick Capture](evolution.md#quick-captu
 
 - **Pre-implementation planning**: [/bap](../bap/SKILL.md) (receives user story as input)
 - **Execution**: [/eth](../eth/SKILL.md) (implements the plan BAP produces)
-- **DDD pattern reference**: `agents/system-architect.md`
+- **DDD pattern reference**: `agents/system-architect/system-architect.md`
 - **Backend rules**: `rules/backend.md` (hexagonal architecture, database patterns)
 - **Security rules**: `rules/security.md` (OWASP, secrets, fintech safety)
 - **Deliverables rule**: `rules/deliverables.md` (output requirements)

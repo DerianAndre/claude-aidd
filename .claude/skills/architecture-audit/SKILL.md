@@ -332,5 +332,5 @@ After completing this workflow, execute [Quick Capture](evolution.md#quick-captu
 - **Code review**: [/review](../review/SKILL.md) -- standalone quality review
 - **Hexagonal rules (SSOT)**: [rules/backend.md](../rules/backend.md) -- layer separation, ports & adapters, DDD patterns
 - **Code style**: [rules/code-style.md](../rules/code-style.md) -- naming conventions, immutability, TypeScript standards
-- **System architect agent**: [agents/system-architect.md](../agents/system-architect.md) -- C4 diagrams, ADRs
+- **System architect agent**: [agents/system-architect/system-architect.md](../agents/system-architect/system-architect.md) -- C4 diagrams, ADRs
 - **Evolution**: [workflows/evolution.md](../../workflows/evolution.md) -- post-workflow memory capture

@@ -293,9 +293,9 @@ After completing this workflow, execute [Quick Capture](evolution.md#quick-captu
 ## Cross-References
 
 - **TKB location**: [`.claude/knowledge/`](../knowledge/) — technology evaluation files
-- **TKB schema**: [`knowledge-architect`](../agents/knowledge-architect.md) — entry format and quality standards
+- **TKB schema**: [`knowledge-architect`](../agents/knowledge-architect/knowledge-architect.md) — entry format and quality standards
 - **ADR format**: [`rules/documentation.md`](../rules/documentation.md) — normalized ADR template
 - **Anti-bias protocol**: [`rules/global.md`](../rules/global.md) — anti-bias checklist (sunk cost, survivorship, confirmation, recency)
-- **Architecture decisions**: [`system-architect`](../agents/system-architect.md) — for architecture-impacting selections
+- **Architecture decisions**: [`system-architect`](../agents/system-architect/system-architect.md) — for architecture-impacting selections
 - **Documentation sync**: [`/docs`](../docs/SKILL.md) — ADR health audit
 - **Evolution**: [`workflows/evolution.md`](../../workflows/evolution.md) — post-workflow memory capture

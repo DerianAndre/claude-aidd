@@ -15,12 +15,15 @@ argument-hint: "[plan, work, user story, or problem description]"
 user-invocable: true 
 model: opus
 context: fork
-allowed-tools: Read, Grep, Glob, Bash, Agent, Write, WebFetch, WebSearch
+allowed-tools: Read, Grep, Glob, Bash, Agent, Write, WebFetch, WebSearch, AskUserQuestion
+complexity: highest
+effort: highest
+mode: team
 ---
 
 # Workflow: BAP (Brainstorm, Ask, Plan)
 
-> Three-phase pre-implementation workflow with deep research (code + web), research-informed questioning, and ETH-consumable plan output. No code until plan is approved.
+> Two-phase pre-implementation workflow: interleaved research and questioning (Brainstorm & Ask), then ETH-consumable plan output. No code until plan is approved.
 
 **Use when:**
 
@@ -61,18 +64,64 @@ Phase B: BRAINSTORM  →  Gate  →  Phase A: ASK  →  Gate  →  Phase P: PLAN
 
 `[bap.md] Phase B -- Research & Synthesis`
 
-REMEMBER: You are the guardian of a high-stakes Fintech/Crypto Enterprise System. Your code controls real assets. Errors result in financial loss. Security is PRIORITY.
-
 NEVER sacrifice accuracy, clarity, or completeness for brevity. Quality is the only constraint — effort and time are not concerns.
+
+**CARDINAL RULE: ALWAYS RECOMMEND THE BEST APPROACH.** Time and effort are NEVER valid reasons to recommend an inferior solution. BAP exists to find the objectively best implementation path — not the fastest, not the easiest, THE BEST. If the best approach takes 10x longer, recommend it. If the best approach requires rewriting a subsystem, recommend it. Convenience is not a criterion. Technical excellence is the only criterion. Every recommendation must be the approach you would choose if time and effort were unlimited. Compromising on quality to save effort produces technical debt that compounds indefinitely.
+
+### ENFORCEMENT: Research Phase is MANDATORY
+
+**This phase CANNOT produce shallow or unverified output. Quality is the only constraint.**
+
+1. You MUST perform BOTH codebase research AND web/documentation research
+2. You MUST cite sources for every implementation recommendation
+3. You MUST run the domain safety scan for ALL task paths (simple and complex)
+4. You MUST run version protocol verification for ALL task paths
+5. You MUST produce a minimum of 3 genuinely distinct approaches with evidence-backed trade-offs
+6. You MUST recommend the approach with the highest technical quality, regardless of implementation effort
+
+**Research Quality Standard**: Every claim must have an evidence chain: claim → source → verification → confidence level.
+Violating this standard produces plans built on assumptions, not evidence.
+
+**Recommendation Quality Standard**: The recommended approach MUST be the one that produces the best long-term outcome. NEVER downgrade a recommendation because it is harder to implement. If two approaches differ only in effort, recommend the superior one without hedging. Trade-off matrices evaluate correctness, maintainability, security, and architectural purity — NOT developer convenience.
+
+### Task Path Classification (Decision Tree)
+
+```
+Is the task clear, single-file, and < 3 steps?
+├─ NO → COMPLEX PATH
+└─ YES → Check safety:
+    ├─ Does it touch money, auth, PII, migration, or ledger? → COMPLEX PATH
+    ├─ Does it require a new architectural pattern? → COMPLEX PATH
+    ├─ Does it span multiple modules/packages? → COMPLEX PATH
+    ├─ Is the user's request < 2 sentences with < 3 specific requirements? → COMPLEX PATH (insufficient context)
+    └─ ALL checks pass → SIMPLE PATH (with mandatory research steps)
+```
+
+**Default**: If uncertain, use COMPLEX PATH. The cost of over-researching is low. The cost of under-researching is rework.
 
 ### Simple task path
 
 For tasks that are clear, single-file, or fewer than 3 steps:
 
-- Lead explores inline: read relevant files, search for existing patterns, find reusable code
-- Lead does web research via `WebSearch|WebFetch|context7` for implementation patterns
-- Produce 2-3 distinct approaches with trade-offs
-- No team spawning needed — proceed directly to Gate B→A
+**Classification gate**: Before using simple path, verify ALL of these are true:
+- Feature spans single module (no cross-cutting concerns)
+- Zero high-risk surfaces (money, auth, PII, migration, ledger)
+- No new architectural patterns required
+- Lead can identify 2-3 approaches from codebase evidence alone
+
+**If ANY condition is false → use complex path. Default to complex when uncertain.**
+
+#### Simple path research steps (ALL mandatory):
+
+1. **Codebase research**: Read relevant files, search for existing patterns, find reusable code. Cite file paths.
+2. **Web research**: Use `WebSearch|WebFetch|context7` for implementation patterns. Cite at minimum 2 external sources.
+3. **Version protocol**: Check `package.json` for library versions. Verify APIs exist in detected versions.
+4. **Domain safety scan**: Run the scan table (even for "simple" tasks — a single function reading wallet balances touches money movement).
+5. **RDE scan**: Check task against skill/rule/knowledge triggers. If RDE detects high-risk/security/architecture → **escalate to complex path**.
+6. **Produce 3 approaches** with evidence-backed trade-offs. Each approach cites at least 1 codebase pattern + 1 external source.
+
+**STOP — Use `AskUserQuestion` to present approaches to the user and WAIT for selection before entering Phase A.**
+**Phase A is MANDATORY for simple tasks.** Minimum 3 questions: (1) confirm chosen approach, (2) confirm file paths/scope, (3) confirm test strategy.
 
 ### Complex task path
 
@@ -114,7 +163,7 @@ Before creating the team, the lead conducts three-track research:
 - Verify every file path in Technical Design still exists and matches expectations
 - Identify reusable code, existing patterns, utility functions that can be leveraged
 - Search for existing tests that demonstrate the patterns to follow
-- Run the fintech safety scan:
+- Run the domain safety scan:
 
 | Surface        | Check                                                          | If YES                                                                                                |
 | -------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
@@ -162,7 +211,7 @@ detected-agents:     [list]
 detected-workflows:  [list]
 
 Enforcement: ALL detected resources LOADED into context.
-Fintech flags: [list or none]
+Risk flags: [list or none]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -222,7 +271,7 @@ The lead composes the optimal research team (2-4 researchers) based on the featu
 **Rules:**
 - Minimum 2 researchers, maximum 4
 - Always include at least 1 researcher who covers codebase patterns (pattern-analyst or implementation-analyst)
-- If fintech safety scan in Track 1 flagged ANY risk surface → always include security-architect (regardless of domain)
+- If domain safety scan in Track 1 flagged ANY risk surface → always include security-architect (regardless of domain)
 - The lead is NOT constrained to this table — novel combinations are valid if justified by the feature's characteristics
 - Each researcher prompt uses the same structured format: Finding/Evidence/Risk/Recommendation + CONFLICT handling + web research tools
 
@@ -255,7 +304,7 @@ Handoff format: rules/handoffs.md Section 2 (Researcher → Lead)."
 
 - **implementation-analyst**: Mission: Analyze user story delta table and acceptance criteria. Identify existing code to extend vs new code to create, utility functions to reuse, test patterns to follow. Report incremental build order and hidden dependencies. Rules: `rules/backend.md`, `rules/code-style.md`, `rules/deliverables.md`.
 
-- **system-architect**: Mission: Map technical constraints — dependency order, shared-file serialization points, migration sequencing, risk surfaces. Run fintech risk checklist (money movement, auth/session, migrations, ledger writes, PII). Rules: `rules/backend.md`, `rules/security.md`, `agents/system-architect/system-architect.md`.
+- **system-architect**: Mission: Map technical constraints — dependency order, shared-file serialization points, migration sequencing, risk surfaces. Run domain risk checklist (money movement, auth/session, migrations, ledger writes, PII). Rules: `rules/backend.md`, `rules/security.md`, `agents/system-architect/system-architect.md`.
 
 - **pattern-analyst**: Mission: Audit codebase patterns for consistency — naming conventions, test patterns to mirror, import structures, layer boundaries. Report simplest implementation path and biggest convention-deviation risk. Rules: `rules/code-style.md`, `rules/frontend.md` (if FE), `rules/testing.md`.
 
@@ -346,19 +395,51 @@ If researchers disagreed (`[CONFLICT]`), the synthesis presents both positions w
 
 **Step 4 — Produce approaches table**
 
+**CRITICAL**: The evaluation matrix ranks by technical excellence, NOT by ease of implementation. "Effort to implement" is INFORMATIONAL ONLY — it does NOT reduce an approach's score. The best approach wins even if it is the hardest to build.
+
 | Criteria                                | Weight | Option A | Option B | Option C |
 | --------------------------------------- | ------ | -------- | -------- | -------- |
-| Feasibility (can we build it?)          | High   |          |          |          |
-| Complexity (effort to implement)        | High   |          |          |          |
-| Maintainability (long-term cost)        | Medium |          |          |          |
+| Correctness (solves the problem fully)  | High   |          |          |          |
+| Maintainability (long-term cost)        | High   |          |          |          |
+| Security (risk surface)         | High   |          |          |          |
 | Pattern Alignment (fits conventions)    | High   |          |          |          |
-| Security (fintech risk surface)         | High   |          |          |          |
+| Architectural Purity (clean boundaries) | High   |          |          |          |
 | ETH-readiness (atomic task breakdown)   | High   |          |          |          |
-| Tier distribution (T1/T2/T3 task count) | Medium |          |          |          |
+| Effort to implement (informational)     | Info   |          |          |          |
+| Tier distribution (T1/T2/T3 task count) | Info   |          |          |          |
+
+**Scoring rule**: Effort and tier distribution are documented for planning purposes but MUST NOT influence the recommendation. The approach with the highest combined score on correctness, maintainability, security, pattern alignment, architectural purity, and ETH-readiness wins.
+
+**Step 4.5 — Devil's Advocate Analysis**
+
+For the leading approach (highest score in evaluation matrix):
+
+1. Identify the strongest argument AGAINST this approach
+2. Document: "Devil's advocate concern: [specific weakness]"
+3. Document: "Counter-evidence or mitigation: [response]"
+4. If the concern cannot be adequately countered → flag for Phase A user decision
+5. If concern reveals a fatal flaw → downgrade the approach and re-evaluate
+
+This step prevents confirmation bias (H9) and premature convergence.
+Research basis: Intelligence community structured analytical technique; reduces confirmation bias by 30-50% when followed rigorously (Heuer, CIA methodology).
 
 **Step 5 — Synthesis validation pass**
 
 After writing the synthesis, the lead asks: "Does this synthesis answer: which approach produces the best ETH-consumable plan with the lowest risk?" If gaps remain, return to Step 1.
+
+**Step 5.5 — Pre-Mortem (Prospective Hindsight)**
+
+Before presenting to the user:
+
+1. For the recommended approach, imagine: "It is 6 months from now. This implementation FAILED. Why?"
+2. Generate 3-5 failure scenarios (technical, organizational, integration, scale)
+3. For each scenario, classify:
+   - **MITIGATED**: Plan already addresses it (cite which task/approach element)
+   - **NEEDS MITIGATION**: Add to Phase A questions
+   - **ACCEPTED RISK**: Acknowledge explicitly to user
+4. Include pre-mortem results in the Gate B→A presentation
+
+Research basis: Gary Klein (HBR 2007) + Mitchell/Russo/Pennington (1989) — prospective hindsight increases failure prediction accuracy by 30%.
 
 ---
 
@@ -366,7 +447,7 @@ After writing the synthesis, the lead asks: "Does this synthesis answer: which a
 
 1. Lead sends `shutdown_request` to each researcher
 2. `TeamDelete` only after all confirmations received
-3. **Lead runs Phase A solo** — Phase A is structured dialogue with the user requiring a single voice. Phase P is solo by default but MAY use specialist assist for complex plans (see Phase P).
+3. **Phase A is a dialogue WITH the user** — the lead presents research-informed questions and waits for answers. No agent teams, no parallel work. Single voice, user-facing interaction. The user's domain knowledge is the input Phase A extracts. Phase P is solo by default but MAY use specialist assist for complex plans (see Phase P).
 4. Present 3 approaches to user with:
    - Recommendation and rationale (evidence-based, not opinion)
    - Attribution summary (which researcher surfaced which key constraints)
@@ -375,11 +456,39 @@ After writing the synthesis, the lead asks: "Does this synthesis answer: which a
 
 ### Gate B→A
 
-| Option                 | Condition                                                                                                                                      |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `[Proceed to Ask]`     | Implementation space articulated with codebase + web evidence. All researcher domains covered. Selected approach can produce atomic ETH tasks. |
-| `[Targeted Follow-up]` | A domain is missing coverage or ETH-readiness is unclear. Return to B for focused research on the gap.                                         |
-| `[Re-brainstorm]`      | Fundamental assumptions invalidated by research. Restart B with revised scope.                                                                 |
+**MANDATORY QUALITY CHECK** (lead validates before presenting to user):
+
+- [ ] All researchers reported findings (or failures handled per B.4)
+- [ ] Coverage matrix populated: no GAP cells (or gaps filled via follow-up)
+- [ ] Domain safety scan completed: flags identified and documented
+- [ ] Version protocol verified: no API mismatches flagged
+- [ ] RDE manifest built: detected resources listed
+- [ ] Minimum 3 distinct approaches documented
+- [ ] Each approach cites evidence (codebase file paths + external sources)
+- [ ] Each approach lists risks, trade-offs, and ETH-readiness assessment
+- [ ] Unresolved conflicts surfaced explicitly as user decision points
+- [ ] Devil's advocate analysis completed for recommended approach
+- [ ] Pre-mortem failure scenarios documented with classifications
+
+**If ANY checkbox fails → return to research. Do NOT present incomplete options.**
+
+**STOP. Use `AskUserQuestion` to present the following to the user and WAIT for their response:**
+
+1. The 3 approaches with trade-offs and evidence
+2. Recommendation with rationale — **MUST be the technically superior approach regardless of effort** (evidence-based, not opinion, not convenience-driven)
+3. Pre-mortem results (failure scenarios and their classifications)
+4. Unresolved conflicts requiring user decision
+5. Ask: "Which approach should we explore in Phase A, or do you need more research?"
+
+**Recommendation integrity**: If the recommended approach is NOT the technically best option, the lead MUST justify why with evidence of a disqualifying flaw (not "it's harder" or "it takes longer"). Effort is never a disqualifying flaw.
+
+| Option                 | Condition                                                                                             |
+| ---------------------- | ----------------------------------------------------------------------------------------------------- |
+| `[Proceed to Ask]`     | User selects approach. All quality check items pass. Selected approach can produce atomic ETH tasks.  |
+| `[Targeted Follow-up]` | A domain is missing coverage or ETH-readiness is unclear. Return to B for focused research on the gap. |
+| `[Re-brainstorm]`      | Fundamental assumptions invalidated by research. Restart B with revised scope.                         |
+
+**DO NOT PROCEED TO PHASE A WITHOUT USER RESPONSE.** Do not self-select. Do not infer. Wait.
 
 ---
 
@@ -388,6 +497,23 @@ After writing the synthesis, the lead asks: "Does this synthesis answer: which a
 > Structured implementation questioning. All questions MUST cite Phase B findings. Product.md pre-resolved decisions are confirmed facts, not re-asked.
 
 `[bap.md] Phase A -- Structured Questioning`
+
+### ENFORCEMENT: Ask Phase is MANDATORY
+
+**This phase CANNOT be skipped, shortened, or self-answered. It applies to ALL tasks regardless of complexity.**
+
+1. You MUST use `AskUserQuestion` to present questions to the user and WAIT for responses
+2. You MUST NOT self-answer questions on the user's behalf
+3. You MUST NOT proceed to Phase P until the user has responded
+4. You MUST ask a MINIMUM of 3 questions (simple tasks) or 5 questions (complex tasks)
+5. If the user explicitly says "skip questions" or "just plan it", acknowledge the skip but WARN that plan quality may be lower
+
+**HARD GATE**: Phase A ends ONLY when:
+- User has responded to at least one round of questions, AND
+- Confidence assessment is presented TO THE USER (not self-assessed silently), AND
+- User explicitly confirms readiness to proceed to planning
+
+Violating this gate is a PROTOCOL FAILURE.
 
 **Differentiation from Product ASK:**
 - Product ASK = WHAT to build (requirements, domain rules, scope, business invariants)
@@ -400,8 +526,24 @@ Every question to the user MUST follow one of these patterns:
 1. **Research-informed**: "Based on [finding from B.1 Track 2], the recommended implementation pattern is X. Should we follow this, or do you have a reason to diverge?"
 2. **Evidence-citing**: "The codebase currently implements Y at [file:line]. We need Z. Should we extend Y or create a new approach?"
 3. **Trade-off**: "Web research shows two valid implementation patterns: A (per [source]) and B (per [source]). Which fits our constraints?"
-4. **Confirmation**: "Based on [fintech safety scan], this implementation touches money movement. Confirming: we need transaction boundaries and BigInt precision in every task that modifies balances. Correct?"
+4. **Confirmation**: "Based on [domain safety scan], this implementation touches money movement. Confirming: we need transaction boundaries and BigInt precision in every task that modifies balances. Correct?"
 5. **Resource-informed**: "RDE detected [skill/rule/knowledge]. This means [implication]. Confirming: [question about how the detected resource applies]." (e.g., "RDE detected clean-ddd-hexagonal. Should we model X as an aggregate with Y as a value object?")
+6. **Socratic (assumption-surfacing)**: "You've stated X as a requirement. What happens if X is not true? What would change?" (Forces examination of hidden assumptions)
+
+### Questioning Depth Protocol (Bloom's Taxonomy)
+
+Every significant requirement MUST be validated across cognitive levels:
+
+| Level | Question Pattern | Purpose |
+|-------|-----------------|---------|
+| Remembering | "What exactly does the system need to do?" | Explicit requirements |
+| Understanding | "Why does it need to do this?" | Business context |
+| Applying | "How does this interact with [constraint from Phase B]?" | Edge cases |
+| Analyzing | "What assumptions underlie this requirement?" | Hidden dependencies |
+| Evaluating | "Is this consistent with [other stated goal]?" | Conflict detection |
+| Creating | "Is there a better formulation of this need?" | Reframing |
+
+Not all levels needed for every question. But for architecture-level decisions, ALL 6 levels MUST be covered.
 
 **Rule**: If you have no findings to reference for a question, you haven't explored enough — return to Phase B for more research.
 **Rule**: Phase A MUST include at least one question informed by each detected resource category from the Resource Manifest. If RDE detected a TKB entry, ask about the technology choice. If RDE detected a rule, confirm the constraint applies.
@@ -438,12 +580,12 @@ The lead selects ASK categories based on Phase B findings. Categories are NOT fi
 
 #### Risk Mitigation
 
-- How do we mitigate each risk surface identified in Phase B's fintech safety scan?
+- How do we mitigate each risk surface identified in Phase B's domain safety scan?
 - What's the rollback strategy for migrations?
-- What fintech safety measures apply to each task? (transaction boundaries, BigInt, fail-closed)
+- What domain safety measures apply to each task? (transaction boundaries, BigInt, fail-closed)
 - What's the plan if implementation diverges from the user story's architecture decision?
 - Product identified WHAT risks exist — BAP determines HOW to handle them in code.
-- **Include when**: fintech flags present, security risk surfaces identified, or auth changes needed
+- **Include when**: risk flags present, security risk surfaces identified, or auth changes needed
 
 #### Test & Verification Strategy
 
@@ -493,9 +635,47 @@ The lead selects ASK categories based on Phase B findings. Categories are NOT fi
 - Minimum: 2 core + 2 feature-specific = 4 categories
 - Maximum: 2 core + 5 feature-specific = 7 categories
 - Lead distributes 100 points across selected categories, weighted by importance to THIS implementation
-- If fintech flags present → Risk Mitigation MUST be included
+- If risk flags present → Risk Mitigation MUST be included
 - If clean-ddd-hexagonal detected → Domain Modeling MUST be included
 - The lead justifies the selection and weighting based on Phase B findings
+
+**Minimum question counts:**
+- Simple tasks: minimum 3 questions (approach confirmation, file paths, test strategy)
+- Complex tasks: minimum 5 questions across selected categories (at least 1 per core category + 1 per feature-specific)
+- Questions MUST be presented to the user, not self-answered
+
+---
+
+### Assumption Mapping (MANDATORY before Confidence Assessment)
+
+Before scoring confidence, explicitly map assumptions:
+
+1. **Extract**: List all implicit assumptions from Phase B findings and Phase A answers
+2. **Classify**: Desirability (users want this), Viability (we can sustain this), Feasibility (we can build this)
+3. **Assess**: For each assumption, rate Evidence (none → strong) and Risk (low → high)
+4. **Flag**: HIGH RISK + LOW EVIDENCE assumptions become:
+   - Spike tasks in Phase P (if feasibility)
+   - User validation tasks (if desirability)
+   - Business case questions (if viability)
+5. **Document**: Include assumption map in confidence assessment output
+
+Assumptions with no evidence MUST NOT become acceptance criteria. They become validation tasks.
+
+Research basis: Design thinking assumption mapping (Maze, UXTweak) — systematically prevents building solutions to unvalidated assumptions.
+
+---
+
+### Pre-Mortem Risk Surfacing (present to user)
+
+After covering all question categories and mapping assumptions:
+
+1. Present to user: "Before we plan, imagine this feature fails in production. What would cause that?"
+2. Collect user's failure scenarios (they know their domain better than research)
+3. Cross-reference with Phase B pre-mortem results (Step 5.5)
+4. For new failure modes identified by user: add to assumption map as HIGH RISK
+5. For each failure mode, plan mitigation in Phase P
+
+This step surfaces domain-specific risks that research cannot discover.
 
 ---
 
@@ -521,13 +701,34 @@ Unresolved: [list open items]
 Blocked by: [list or "nothing"]
 ```
 
+**MANDATORY**: Use `AskUserQuestion` to present this confidence assessment TO THE USER verbatim. Do not silently self-assess. The user must SEE the score and unresolved items. Ask: "Are you satisfied with this clarity level, or should we dig deeper into any category?"
+
+**Epistemic Status** (present to user alongside score):
+
+For each major decision in the plan:
+- **Confidence**: HIGH | MEDIUM | LOW
+- **Evidence**: What makes us confident? (cite sources)
+- **Known unknowns**: What we don't know and acknowledge
+- **Assumptions**: What we're assuming without proof
+- **Reversibility**: HIGH (easy to change) | MEDIUM | LOW (hard to undo)
+
+Example:
+> "Architecture: Event-driven (HIGH confidence) — benchmarks show 40% throughput improvement (evidence), tested pattern in codebase at `src/events/` (evidence). Unknown: behavior under 10M+ events/day (untested). Assumption: event ordering is not critical. Reversibility: LOW (changing event model requires data migration)."
+
 ---
 
 ### Gate A→P
 
-> Score ≥ 90/100 AND every selected category ≥ 60% of its allocated points AND user confirms readiness.
+> Score ≥ 90/100 AND every selected category ≥ 60% of its allocated points.
 
-If not met → ask more questions or do more web research. Do not proceed with unresolved implementation ambiguity.
+**MANDATORY HALT — Use `AskUserQuestion` to present to the user:**
+1. The confidence score and per-category breakdown
+2. Any unresolved items
+3. Explicit question: "Ready to proceed to planning, or do you want to explore any area further?"
+
+**DO NOT PROCEED TO PHASE P WITHOUT USER RESPONSE.** This is not a self-service gate.
+
+If score < 90/100 → ask more questions or do more web research. Present updated score after each round.
 
 ---
 
@@ -537,14 +738,29 @@ If not met → ask more questions or do more web research. Do not proceed with u
 
 `[bap.md] Phase P -- Plan Document`
 
+### ENFORCEMENT: Planning Phase is MANDATORY and VALIDATED
+
+**Plans are not "done" when written. They are "done" when validated against quality gates.**
+
+1. Every task MUST be vertically sliced (independently deliverable, cross-layer)
+2. Every task MUST have exact file paths (not "folder/" or "TBD")
+3. Every task MUST have testable acceptance criteria (Given/When/Then or imperative assertion)
+4. Every task MUST have a tier assignment (T1/T2/T3) with justification
+5. Every task MUST list dependencies explicitly (blockedBy/blocks)
+6. Risk flags MUST be copied from product spec (not inferred by BAP)
+7. The plan MUST include a dependency graph showing the critical path
+8. ETH Composition Data MUST be complete before user presentation
+
+**The plan is presented to the user ONLY after passing the Plan Quality Checklist below.**
+
 **Output:** Plan documents at `docs/plans/active/<YYYY.MM.DD>-<ticket-number>-<feature-name>/`
 
 ### Optional Specialist Assist
 
-For complex plans (15+ tasks or high fintech flag density), the lead MAY spawn a single specialist Explore agent to assist with plan verification:
+For complex plans (15+ tasks or high risk flag density), the lead MAY spawn a single specialist Explore agent to assist with plan verification:
 
 - **data-architect**: Verify migration ordering, schema change safety, index strategy
-- **security-architect**: Verify fintech flag assignment accuracy, auth flow correctness
+- **security-architect**: Verify risk flag assignment accuracy, auth flow correctness
 - **system-architect**: Verify dependency graph, layer boundary compliance
 
 This is optional — the lead judges whether specialist input adds value to the plan's accuracy. The specialist verifies, not authors. Phase A remains solo (structured dialogue needs single voice).
@@ -590,7 +806,7 @@ This is optional — the lead judges whether specialist input adds value to the 
 - **Tier**: T1 (Opus — complex logic, architecture) | T2 (Sonnet — standard implementation) | T3 (Haiku — boilerplate, wiring)
 - **Depends on**: [task IDs or "none"]
 - **Acceptance**: [specific, testable criterion — e.g., "unit test passes for X", "typecheck clean"]
-- **Fintech flags**: [money | auth | PII | migration | ledger | none]
+- **Risk flags**: [money | auth | PII | migration | ledger | none]
 
 [Repeat for each task]
 
@@ -614,9 +830,9 @@ This is optional — the lead judges whether specialist input adds value to the 
 **Independent task groups**: [N groups — list which tasks per group]
 **Tier distribution**: [N T1, N T2, N T3]
 **T1 task domains**: [list: domain/security/data/frontend/etc.]
-**Fintech flag density**: [N of M tasks flagged — list flags per task]
+**Risk flag density**: [N of M tasks flagged — list flags per task]
 **Layers touched**: [domain | application | infrastructure | presentation]
-**BAP suggestion**: [free-form text — what BAP thinks the optimal ETH team looks like, NOT a mode letter. e.g., "3 builders (1 specialist data-architect for migration tasks, 2 general), security-focused review sub-team due to 4/7 tasks having fintech flags"]
+**BAP suggestion**: [free-form text — what BAP thinks the optimal ETH team looks like, NOT a mode letter. e.g., "3 builders (1 specialist data-architect for migration tasks, 2 general), security-focused review sub-team due to 4/7 tasks having risk flags"]
 
 ## Resource Manifest
 
@@ -628,7 +844,7 @@ This is optional — the lead judges whether specialist input adds value to the 
 **detected-knowledge**: [TKB category/entries or none]
 **detected-agents**: [list]
 **detected-workflows**: [list or none]
-**fintech-flags**: [list or none]
+**detected-risks**: [list or none]
 ```
 
 ### Task Granularity
@@ -707,7 +923,59 @@ docs/plans/active/2026.02.20-add-new-feature/
 3. Commit plan: `docs(scope): add plan for <feature>`
 4. Proceed to execution ([/eth](../eth/SKILL.md))
 
-**Gate P→Execute:** Plan is actionable, atomic, and verifiable? Every task has file paths, tier, and acceptance criterion? User approves.
+### Plan Quality Checklist (MANDATORY before user presentation)
+
+**Per-task validation:**
+- [ ] Task name is imperative and specific (e.g., "Create UserAggregate entity" not "Do the thing")
+- [ ] Files field lists exact paths: `src/path/to/file.ts` (not "folder/" or "TBD")
+- [ ] Layer is one of: Domain, Application, Infrastructure, Presentation
+- [ ] Tier is T1, T2, or T3 with 1-sentence justification
+- [ ] Depends On field lists task IDs or "none"
+- [ ] Acceptance criterion is testable (pass/fail in 2-5 minutes)
+- [ ] Acceptance criterion includes at minimum: happy path + 1 failure case
+- [ ] Risk flags are copied from product spec / Phase B safety scan (not guessed)
+- [ ] Estimated effort: ≤ 3 days per task (decompose further if exceeded)
+
+**Plan-level validation:**
+- [ ] Minimum 3 tasks (plans < 3 suggest trivial work — confirm with user)
+- [ ] Maximum 20 tasks (split into phases if exceeded)
+- [ ] Dependencies form a valid DAG (no circular dependencies)
+- [ ] Critical path identified (longest sequential chain documented)
+- [ ] Tier distribution is reasonable (not all T1, not all T3)
+- [ ] Every risk-flagged surface has mitigations in at least one task
+- [ ] ETH Composition Data is complete (task count, tier dist, risk flags, team suggestion)
+- [ ] ADR produced (if feature has architecture decisions)
+- [ ] Architecture diagram produced (if feature changes system structure)
+- [ ] Traceability: every acceptance criterion maps to a verifiable test or assertion
+- [ ] Pre-mortem risks from Phase B and Phase A have corresponding mitigations in tasks
+- [ ] Assumption map: high-risk/low-evidence assumptions have spike/validation tasks
+
+**If ANY per-task checkbox fails → fix the task. If ANY plan-level checkbox fails → fix the plan.**
+**Do NOT present to user until all checkboxes pass.**
+
+---
+
+### Gate P→Execute
+
+**MANDATORY HALT.** Use `AskUserQuestion` to present to the user:
+
+1. The complete plan with all tasks, tiers, dependencies, and file manifest
+2. The dependency graph showing critical path
+3. ETH Composition Data (team recommendation)
+4. Pre-mortem risks and their mitigations
+5. Assumption map (any remaining high-risk/low-evidence items)
+6. ADR and diagram (if applicable)
+
+Ask: "Does this plan accurately capture what we discussed? Ready for execution, or do you want to revise?"
+
+| Option | Condition |
+|--------|-----------|
+| `[Approve → ETH]` | User confirms plan is accurate and complete. All quality checklist items pass. |
+| `[Revise]` | User wants changes. Apply changes, re-validate checklist, re-present. |
+| `[Return to Ask]` | Unresolved questions discovered during plan review. Return to Phase A. |
+| `[Reject → Re-brainstorm]` | Plan reveals fundamental approach is wrong. Return to Phase B. |
+
+**DO NOT PROCEED TO ETH WITHOUT USER APPROVAL.** Plan approval is the final human gate before code is written.
 
 ---
 
@@ -734,11 +1002,20 @@ docs/plans/active/2026.02.20-add-new-feature/
 - [ ] Implementation clarity score ≥ 90% before planning
 - [ ] Plan has atomic tasks with exact file paths and tier assignments
 - [ ] Every task has an independently testable acceptance criterion
-- [ ] Fintech safety scan completed and flags propagated to tasks
+- [ ] Domain safety scan completed and flags propagated to tasks
 - [ ] ADR and diagram deliverables produced (not skipped)
 - [ ] TodoWrite items created for all tasks
 - [ ] User approved the plan
 - [ ] Plan committed to version control before implementation
+- [ ] Phase B research cited minimum 2 external sources per approach
+- [ ] Devil's advocate analysis completed for recommended approach
+- [ ] Pre-mortem identified 3+ failure scenarios with mitigations
+- [ ] Assumption map produced with risk/evidence classification
+- [ ] Plan Quality Checklist passed (all per-task and plan-level items)
+- [ ] Critical path identified and documented
+- [ ] Dependency graph validated as acyclic DAG
+- [ ] Traceability: every acceptance criterion has corresponding test/assertion
+- [ ] Epistemic status documented for major decisions (confidence + unknowns)
 
 ---
 
@@ -757,7 +1034,9 @@ docs/plans/active/2026.02.20-add-new-feature/
 | Version protocol reveals incompatible library version    | BLOCKER. Cannot plan against wrong library version. Resolve version first.                         |
 | Researcher finds security vulnerability in existing code | Escalate immediately. Do not plan around known vulnerabilities.                                    |
 | Researcher blocked (can't access context)                | Researcher DMs lead → lead provides clarification or narrows scope.                                |
-| Technology selection needed (new library/tool)           | Invoke [/tech-select](../tech-select/SKILL.md). Cannot proceed with unvalidated tech choice.       |
+| Technology selection needed (new library/tool)           | Invoke [/tech-select](../tech-select/SKILL.md). Cannot proceed with unvalidated tech choice.                                                                                                                                                                                                                                               |
+| All researchers report zero findings                     | Lead spawns follow-up with different search terms and broader scope. If still zero after follow-up: STOP. Present to user: "Research found no relevant patterns or prior art. Options: (1) proceed with first-principles design, (2) provide additional context, (3) abort." Cannot proceed without evidence or explicit user acknowledgment. |
+| Web research returns no current documentation            | Flag version/library as potentially unsupported. Verify library is still maintained. If abandoned: escalate to user as blocker.                                                                                                                                                                                                              |
 
 ---
 
@@ -783,6 +1062,22 @@ docs/plans/active/2026.02.20-add-new-feature/
 | **Open-ended questions**             | Asking without concrete options                                        | `AskUserQuestion` with 2-4 choices and a recommended option always.       |
 | **Confidence without evidence**      | Claiming ≥90% without explicit assessment                              | Written assessment block required with per-category scores.               |
 | **Plan-reality divergence**          | Implementation differs from plan without updating                      | Update plan FIRST, then continue. Divergence log in plan template.        |
+| **Skipping Phase A**                | Jumping from brainstorm directly to planning                           | Phase A is MANDATORY. No exceptions. Even simple tasks need 3 questions.  |
+| **Self-answering questions**        | AI answers its own Phase A questions without user input                 | Questions MUST be presented to user. Wait for response.                   |
+| **Silent confidence assessment**    | AI self-scores 90+ without showing user                                | Assessment MUST be presented to user with explicit confirmation request.   |
+| **Shallow research**                | Lead claims "articulated" without citing sources                       | Every claim must have evidence chain: claim → source → verification.      |
+| **Simple path escape hatch**        | Classifying high-risk task as "simple" to skip research                  | Classification gate: ANY risk flag → complex path. No exceptions.      |
+| **Skipping domain safety scan**           | Simple path omits domain safety check                                 | Domain safety scan is mandatory for ALL paths. Even single-file balance reads.  |
+| **Skipping version protocol**       | Planning against wrong library version                                 | Version protocol runs for ALL paths. BLOCKER if mismatch found.           |
+| **Skipping RDE**                    | Resource detection omitted for simple tasks                            | RDE runs for ALL paths. Detection → mandatory loading.                    |
+| **Single-pass synthesis**           | Writing synthesis without coverage validation                          | Coverage matrix MUST be validated. No GAP cells without follow-up.        |
+| **No devil's advocate**             | Leading approach accepted without adversarial challenge                 | Devil's advocate step mandatory in B.5. Document concern + response.      |
+| **Assumptions as acceptance criteria** | Unvalidated assumptions become task acceptance criteria              | Assumption map: high-risk/low-evidence → spike task, not acceptance.      |
+| **Shallow plan tasks**              | Tasks missing file paths, tiers, or testable acceptance                | Plan Quality Checklist: all per-task checkboxes must pass.                |
+| **Circular dependencies**           | Task dependency graph has cycles                                       | DAG validation mandatory. Cycles are blockers.                            |
+| **Missing critical path**           | No identification of longest sequential chain                          | Critical path documented in every plan.                                   |
+| **Plan without pre-mortem**         | No failure scenario analysis before execution                          | Pre-mortem mandatory in B.5 and Phase A. Risks → mitigation tasks.        |
+| **Effort-downgraded recommendation** | Recommending an inferior approach because the best one is harder      | CARDINAL RULE: always recommend the best approach. Effort is informational, never a scoring criterion. Technical excellence is the only criterion. |
 
 ---
 
@@ -796,6 +1091,26 @@ After completing this workflow, execute [Quick Capture](evolution.md#quick-captu
 
 ---
 
+## Methodology Evidence Base
+
+BAP's methodology is grounded in proven frameworks:
+
+| Method | Source | Phase | Evidence Quality |
+|--------|--------|-------|-----------------|
+| Double Diamond | British Design Council | B (diverge→converge) | Industry standard |
+| ACH (Competing Hypotheses) | CIA/Richard Heuer | B.5 (synthesis) | 50yr intelligence community use |
+| Devil's Advocacy | Intelligence community | B.5 (step 4.5) | Proven bias reduction |
+| Pre-Mortem | Gary Klein (HBR 2007) | B.5 + A | 30% accuracy improvement (Mitchell 1989) |
+| Socratic Method | Philosophical tradition | A (questioning) | Academic + practitioner |
+| Bloom's Taxonomy | Anderson/Krathwohl 2001 | A (depth validation) | Academic standard |
+| Assumption Mapping | Design thinking | A (risk identification) | Industry adoption |
+| Definition of Ready | Scrum.org/Atlassian | A→P gate | Enterprise standard |
+| Vertical Slicing | Agile Alliance | P (task design) | Practitioner consensus |
+| Critical Path Method | DuPont/Remington Rand | P (dependency analysis) | Industry standard (60yr) |
+| Bayesian Confidence | Google/DeepMind research | All (epistemic status) | Emerging academic (2024) |
+
+---
+
 ## Cross-References
 
 - **Input workflow (Product)**: [/product](../product/SKILL.md) (produces user story BAP consumes)
@@ -804,7 +1119,7 @@ After completing this workflow, execute [Quick Capture](evolution.md#quick-captu
 - **Technology selection**: [/tech-select](../tech-select/SKILL.md) (evidence-based tech choices)
 - **Version protocol**: `rules/version-protocol.md` (4-step library version verification)
 - **Backend rules**: `rules/backend.md` (hexagonal architecture, database patterns)
-- **Security rules**: `rules/security.md` (OWASP, secrets, fintech safety)
+- **Security rules**: `rules/security.md` (OWASP, secrets, domain safety)
 - **Testing rules**: `rules/testing.md` (coverage targets, AAA pattern)
 - **Deliverables rule**: `rules/deliverables.md` (required outputs per feature)
 - **Agent teams docs**: https://code.claude.com/docs/en/agent-teams

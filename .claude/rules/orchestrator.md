@@ -38,6 +38,7 @@ Before entering any execution phase, classify the user's request to determine th
 | Defined requirements, ready to plan | BAP Phase P — Plan     | `/bap` (`skills/bap/SKILL.md`)       |
 | Existing plan, ready to build       | ETH — Execute          | `/eth` (`skills/eth/SKILL.md`)       |
 | Bug report or issue                 | BAP Phase B — Research | `/bap` (`skills/bap/SKILL.md`)       |
+| Multiple stories need organizing    | Sprint Planning        | `/sprint` (`skills/sprint/SKILL.md`) |
 
 **Default assumption**: Enter at BAP unless the user demonstrates sufficient clarity to skip ahead.
 
@@ -52,6 +53,7 @@ When ANY of these keywords appear with low context (< 2 sentences of specific re
 | "brainstorm", "brainstorming", "ideate"     | → BAP Phase B  |
 | "improve", "enhance", "optimize", "upgrade" | → BAP Phase B  |
 | "redesign", "rethink", "rearchitect"        | → BAP Phase B  |
+| "sprint", "prioritize stories", "backlog", "iteration planning" | → `/sprint` |
 
 **Context sufficiency check**: If the user provides < 90% clarity (fewer than 3 of: what, why, who, constraints, scope), enter BAP Phase B automatically.
 
@@ -94,18 +96,24 @@ Once intake classification determines sufficient context (>= 90% clarity), use t
 
 **QUALITY Phase:**
 
-| Keywords                                          | Skill Activated      | Output              | Next Step                            |
-| ------------------------------------------------- | -------------------- | ------------------- | ------------------------------------ |
-| test, coverage, unit test                          | `quality-engineer`   | Test suites         | `security-architect` (if tests pass) |
-| security, OWASP, vulnerabilities                   | `security-architect` | security-audit.json | `platform-engineer` (if no criticals)|
-| review, audit, code quality                        | `/review` workflow   | Multi-skill sequence: system-architect + security-architect + quality-engineer |
+| Keywords                                          | Skill Activated          | Output              | Next Step                            |
+| ------------------------------------------------- | ------------------------ | ------------------- | ------------------------------------ |
+| test, coverage, unit test                          | `quality-engineer`       | Test suites         | `security-architect` (if tests pass) |
+| API test, contract test, endpoint validation       | `api-tester`             | Validation report   | `quality-engineer` (if gaps)         |
+| security, OWASP, vulnerabilities                   | `security-architect`     | security-audit.json | `platform-engineer` (if no criticals)|
+| compliance, SOC 2, PCI-DSS, GDPR                  | `compliance-auditor`     | Gap assessment      | `security-architect` (if gaps)       |
+| accessibility, WCAG, screen reader, a11y           | `accessibility-auditor`  | WCAG audit report   | `interface-artisan` (to fix)         |
+| review, audit, code quality                        | `/review` workflow       | Multi-skill sequence: system-architect + security-architect + quality-engineer |
+| performance, load test, benchmark, Core Web Vitals | `performance-benchmarker`| Benchmark report    | `experience-engineer` (to optimize)  |
 
 **RELEASE Phase:**
 
 | Keywords                                          | Skill Activated       | Prerequisite           | Output                         | Next Step              |
 | ------------------------------------------------- | --------------------- | ---------------------- | ------------------------------ | ---------------------- |
 | deploy, CI/CD, Docker, Kubernetes                  | `platform-engineer`   | Security audit passed  | Dockerfile, CI/CD yml, K8s     | `knowledge-architect`  |
-| document, README, API docs                         | `knowledge-architect` | —                      | Markdown docs, API references  | End of cycle           |
+| document, README, API docs                         | `technical-writer`    | —                      | Markdown docs, API references  | End of cycle           |
+| incident, outage, post-mortem                      | `incident-commander`  | —                      | Incident timeline, post-mortem | `platform-engineer`    |
+| data pipeline, ETL, reconciliation, analytics      | `data-engineer`       | `data-architect`       | Pipeline config, quality report| `quality-engineer`     |
 
 **Dependency awareness:** If a prerequisite skill has not produced its output yet, activate the prerequisite first. For example, requesting a React component when no design system exists will activate `design-architect` before `interface-artisan`.
 

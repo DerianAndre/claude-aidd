@@ -505,9 +505,9 @@ After completing this workflow, execute [Quick Capture](evolution.md#quick-captu
 - **Frontend rules (SSOT)**: [rules/frontend.md](../rules/frontend.md) -- WCAG, React patterns, Tailwind, state management, mandatory states checklist
 - **Code style**: [rules/code-style.md](../rules/code-style.md) -- naming conventions, component patterns
 - **Performance rules**: [rules/performance.md](../rules/performance.md) -- profiling methodology, Core Web Vitals
-- **Design architect agent**: [agents/design-architect.md](../agents/design-architect.md) -- design systems, tokens, WCAG, UX philosophy
-- **Interface artisan agent**: [agents/interface-artisan.md](../agents/interface-artisan.md) -- React components, Storybook, CDD
-- **Experience engineer agent**: [agents/experience-engineer.md](../agents/experience-engineer.md) -- frontend architecture, performance, Core Web Vitals
-- **i18n specialist agent**: [agents/i18n-specialist.md](../agents/i18n-specialist.md) -- localization, RTL support
+- **Design architect agent**: [agents/design-architect/design-architect.md](../agents/design-architect/design-architect.md) -- design systems, tokens, WCAG, UX philosophy
+- **Interface artisan agent**: [agents/interface-artisan/interface-artisan.md](../agents/interface-artisan/interface-artisan.md) -- React components, Storybook, CDD
+- **Experience engineer agent**: [agents/experience-engineer/experience-engineer.md](../agents/experience-engineer/experience-engineer.md) -- frontend architecture, performance, Core Web Vitals
+- **i18n specialist agent**: [agents/i18n-specialist/i18n-specialist.md](../agents/i18n-specialist/i18n-specialist.md) -- localization, RTL support
 - **Code review**: [/review](../review/SKILL.md) -- design-reviewer role references this workflow
 - **Evolution**: [workflows/evolution.md](../../workflows/evolution.md) -- post-workflow memory capture

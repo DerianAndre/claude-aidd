@@ -22,6 +22,10 @@
 | [version-protocol.md](version-protocol.md) | 4-step DETECT-LOAD-VERIFY-ANTI-LEGACY before code generation                                    | All code generation tasks — verify library versions against package.json        |
 | [bluf-6.md](bluf-6.md)              | 6-part structured communication protocol (BLUF, analysis, trade-offs, path, risks, unknowns)           | Always — applies to all complex responses (simple responses use parts 1-2)      |
 | [heuristics.md](heuristics.md)       | 10 decision heuristics for evidence-based reasoning under uncertainty                                  | Always — applies to all architectural and strategic decisions                   |
+| [agents.md](agents.md)               | Agent definition enforcement: required sections, quality gates, communication style standards           | All agent definitions in `.claude/agents/`                                      |
+| [handoffs.md](handoffs.md)           | Structured inter-agent handoff templates for BAP/ETH coordination                                      | All BAP/ETH agent transitions (researcher→lead, builder→QE, QA verdict, escalation) |
+| [fintech-testing.md](fintech-testing.md) | Domain-specific testing patterns: ledger reconciliation, idempotency, race conditions, BigInt       | All code touching money movement, ledgers, payments, or financial data          |
+| [operational-readiness.md](operational-readiness.md) | Pre-deployment gate for features touching money/auth/ledger/migration/PII                  | All production deployments, mandatory for fintech-flagged features               |
 
 ---
 

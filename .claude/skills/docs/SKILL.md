@@ -356,9 +356,9 @@ After completing this workflow, execute [Quick Capture](evolution.md#quick-captu
 
 - **Documentation standards (SSOT)**: [rules/documentation.md](../rules/documentation.md)
 - **Deliverables rule**: [rules/deliverables.md](../rules/deliverables.md) — plan + ADR + summary requirements
-- **Agent**: [knowledge-architect](../agents/knowledge-architect.md) — TKB and documentation curation
-- **Agent**: [contract-architect](../agents/contract-architect.md) — API documentation gaps
-- **Agent**: [system-architect](../agents/system-architect.md) — ADR gaps
+- **Agent**: [knowledge-architect](../agents/knowledge-architect/knowledge-architect.md) — TKB and documentation curation
+- **Agent**: [contract-architect](../agents/contract-architect/contract-architect.md) — API documentation gaps
+- **Agent**: [system-architect](../agents/system-architect/system-architect.md) — ADR gaps
 - **Plan workflow**: [/bap](../bap/SKILL.md) — plan creation in Phase P
 - **Execution workflow**: [/eth](../eth/SKILL.md) — triggers docs sync post-feature
 - **Evolution**: [workflows/evolution.md](../../workflows/evolution.md) — post-workflow memory capture

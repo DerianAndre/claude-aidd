@@ -178,7 +178,7 @@ Check:
 - Responsive design: mobile-first, no horizontal scroll at any breakpoint
 - All interactive elements keyboard-accessible with visible focus ring
 
-Reference: `rules/frontend.md` for full WCAG checklist; `agents/design-architect.md` for design system tokens.
+Reference: `rules/frontend.md` for full WCAG checklist; `agents/design-architect/design-architect.md` for design system tokens.
 Skip files outside frontend layers. Read-only -- no edits.
 Report: [BLOCKER/MAJOR/MINOR]: [finding] -- [file:line]"
 
@@ -192,7 +192,7 @@ Check:
 - PII leaks: personal data in logs, error messages, or unencrypted storage
 - Cryptographic correctness: proper algorithms (bcrypt >= 12, AES-256-GCM), no weak hashing (MD5, SHA1)
 
-Reference: `rules/security.md` for full OWASP checklist; `agents/security-architect.md` for threat modeling.
+Reference: `rules/security.md` for full OWASP checklist; `agents/security-architect/security-architect.md` for threat modeling.
 Read-only -- no edits.
 Report: [BLOCKER/MAJOR/MINOR]: [finding] -- [file:line]"
 

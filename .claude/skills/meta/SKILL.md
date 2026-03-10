@@ -10,7 +10,6 @@ triggers:
   - aidd config
 argument-hint: "[target: workflow, rule, agent, or spec name]"
 user-invocable: true
-disable-model-invocation: true
 model: opus
 context: fork
 allowed-tools: Read, Grep, Glob, Bash, Agent, Write, Edit

@@ -125,7 +125,7 @@ Check:
 - No hardcoded credentials, API keys, or secrets in source code
 - IDOR prevention: ownership checks on all resource access endpoints
 
-Reference: `rules/security.md` A01/A02/A07 sections; `agents/security-architect.md` for threat model.
+Reference: `rules/security.md` A01/A02/A07 sections; `agents/security-architect/security-architect.md` for threat model.
 Read-only -- no file edits.
 Report: [P0/P1/P2/P3]: [finding] -- [file:line or 'clean']"
 
@@ -379,5 +379,5 @@ After completing this workflow, execute [Quick Capture](evolution.md#quick-captu
 - **Architecture audit**: [/architecture-audit](../architecture-audit/SKILL.md) -- architecture purity check
 - **Security rules (SSOT)**: [rules/security.md](../rules/security.md) -- OWASP Top 10, secrets, crypto standards
 - **Backend patterns**: [rules/backend.md](../rules/backend.md) -- database, transaction, adapter patterns
-- **Security agent**: [agents/security-architect.md](../agents/security-architect.md) -- threat modeling specialist
+- **Security agent**: [agents/security-architect/security-architect.md](../agents/security-architect/security-architect.md) -- threat modeling specialist
 - **Evolution**: [workflows/evolution.md](../../workflows/evolution.md) -- post-workflow memory capture
