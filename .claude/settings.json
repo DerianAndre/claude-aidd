@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "autoMemoryEnabled": true,
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "postgres",
+    "github",
+    "playwright",
+    "sentry",
+    "shadcn"
+  ],
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "command": "powershell.exe -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('Claude Code needs your attention','Claude Code','OK','Information') | Out-Null\" 2>/dev/null || true",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "jq -r '.tool_input.file_path // empty' | xargs -I {} npx prettier --write --ignore-unknown {} 2>/dev/null || true",
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit|Write"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/stack-guard.mjs",
+            "type": "command"
+          },
+          {
+            "command": "node .claude/hooks/ssot-check.mjs",
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit|Write"
+      },
+      {
+        "hooks": [
+          {
+            "command": "node .claude/hooks/workflow-check.mjs",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "echo \"Post-compaction context: EnXingaPay fintech monorepo (pnpm + Turborepo). Hexagonal/DDD arch. Branch: $(git branch --show-current 2>/dev/null || echo unknown). Recent commits:\" && git log --oneline -3 2>/dev/null || true",
+            "type": "command"
+          }
+        ],
+        "matcher": "compact"
+      }
+    ]
+  },
+  "includeGitInstructions": true,
+  "outputStyle": "default",
+  "permissions": {
+    "allow": [
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm check:*)",
+      "Bash(pnpm db:*)",
+      "Bash(pnpm deps:*)",
+      "Bash(pnpm format:*)",
+      "Bash(pnpm gen:llms:*)",
+      "Bash(pnpm clean:*)",
+      "Bash(pnpm --filter *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git show *)",
+      "Bash(git stash *)",
+      "Bash(git merge *)",
+      "Bash(git rebase *)",
+      "Bash(git cherry-pick *)",
+      "Bash(git rev-parse *)",
+      "Bash(git remote *)",
+      "Bash(git fetch *)",
+      "Bash(docker compose *)",
+      "Bash(gh pr *)",
+      "Bash(gh issue *)",
+      "Bash(gh api *)",
+      "Bash(gh run *)",
+      "Bash(npx prisma *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(tree *)",
+      "Bash(which *)",
+      "Bash(node *)",
+      "Bash(npx *)",
+      "mcp__claude_ai_Figma",
+      "mcp__claude_ai_Context7",
+      "mcp__shadcn",
+      "WebSearch",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:docs.github.com)",
+      "WebFetch(domain:github.blog)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf .)",
+      "Bash(pnpm publish *)",
+      "Bash(npm publish *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -f *)",
+      "Bash(docker system prune *)",
+      "Bash(npx prisma migrate reset *)"
+    ]
+  },
+  "plansDirectory": "./docs/plans/active",
+  "respectGitignore": true
+}

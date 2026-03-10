@@ -1,0 +1,31 @@
+{
+  "name": "claude-plugin-aidd-framework",
+  "version": "0.0.1",
+  "author": {
+    "name": "Derian Castillo",
+    "email": "hola@derianandre.com",
+    "url": "https://derianandre.com/"
+  },
+  "description": "Claude plugin for Aidd Framework",
+  "private": true,
+  "keywords": [
+    "aidd-framework",
+    "claude",
+    "plugin",
+    "llm",
+    "ai",
+    "artificial-intelligence",
+    "machine-learning",
+    "natural-language-processing"
+  ],
+  "packageManager": "pnpm@10.25.0",
+  "engines": {
+    "node": ">=22.21.1 <23.0.0",
+    "pnpm": ">=10.25.0"
+  },
+  "scripts": {
+    "build": "node build-plugin.mjs"
+  },
+  "devDependencies": {
+  }
+}
